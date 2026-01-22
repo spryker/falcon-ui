@@ -1,0 +1,21 @@
+{% extends '@Gui/Layout/layout.twig' %}
+
+{% block head_title %}{{ title|default('Falcon UI')|trans }}{% endblock %}
+
+{% block head_css %}
+    {{ parent() }}
+
+    <link rel="stylesheet" href="{{ assetsPath('falcon-ui/browser/styles.css') }}">
+{% endblock %}
+
+{% block layout %}
+    <falcon-root>Loading Falcon UI...</falcon-root>
+{% endblock %}
+
+{% block footer_js %}
+    {{ parent() }}
+    <script>
+        window.FALCON_UI_CONFIG = {{ falconUiConfig()|json_encode|raw }};
+    </script>
+    <script src="{{ assetsPath('falcon-ui/browser/main.js') }}" type="module"></script>
+{% endblock %}

@@ -1,0 +1,23 @@
+<div class="fl-layout__heading">
+    <header class="fl-layout__header">
+        <h1 class="fl-layout__title">{{ data.title }}</h1>
+
+        <div class="fl-layout__actions">
+            <ng-content select="[actions]"></ng-content>
+        </div>
+    </header>
+
+    <div class="fl-layout__breadcrumbs">
+        @for (breadcrumb of data.breadcrumbs; track $index) {
+            <a
+                class="fl-layout__breadcrumb"
+                [class.fl-layout__breadcrumb--no-link]="!breadcrumb.path"
+                [href]="breadcrumb.path"
+            >
+                {{ breadcrumb.label }}
+            </a>
+        }
+    </div>
+</div>
+
+<ng-content></ng-content>

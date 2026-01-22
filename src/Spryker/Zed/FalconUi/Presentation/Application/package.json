@@ -1,0 +1,14 @@
+{
+    "name": "@spryker-feature/falcon-ui",
+    "version": "0.0.1",
+    "private": true,
+    "description": "Falcon UI Angular application assets",
+    "scripts": {
+        "prebuild": "node ./generate-zed-entries.mjs",
+        "build": "npm run prebuild && ng build falcon-ui",
+        "build:watch": "npm run prebuild && ng build falcon-ui --watch --configuration=development",
+        "build:prod": "npm run prebuild && ng build falcon-ui --configuration=production",
+        "serve": "npm run prebuild && ng serve falcon-ui",
+        "preview": "ng serve falcon-ui --configuration=production"
+    }
+}

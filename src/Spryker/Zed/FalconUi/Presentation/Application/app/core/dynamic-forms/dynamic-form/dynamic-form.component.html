@@ -1,0 +1,24 @@
+@if (config) {
+    <form #formDir="ngForm" [formGroup]="form" (ngSubmit)="triggerSubmit($event)">
+        @for (control of config.controls | sortControls; track control) {
+            <ng-container *activateControlIf="control.activationConfig">
+                <fl-control-layout-wrapper [layout]="control.layout" [content]="controlTemplate">
+                    <ng-template #controlTemplate>
+                        <ng-container
+                            [ngComponentOutlet]="controlResolver.resolve(control.controlType) | async"
+                            [ngComponentOutletInjector]="control | controlInjector"
+                        ></ng-container>
+                    </ng-template>
+                </fl-control-layout-wrapper>
+            </ng-container>
+        }
+
+        <spy-button
+            type="submit"
+            [variant]="this.config.submit.variant"
+            [disabled]="((form.invalid || form.pristine) && !this.config.submit.active) || (isSubmitting$ | async)"
+        >
+            {{ this.config.submit.label }}
+        </spy-button>
+    </form>
+}

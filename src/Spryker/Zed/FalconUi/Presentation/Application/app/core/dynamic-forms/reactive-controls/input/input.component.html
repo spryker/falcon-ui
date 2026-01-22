@@ -1,0 +1,19 @@
+@if (type === 'password') {
+    <spy-input-password
+        [value]="value"
+        (valueChange)="valueChange($event)"
+        [name]="name"
+        [spyId]="id"
+        [placeholder]="placeholder"
+    ></spy-input-password>
+} @else {
+    <spy-input
+        [value]="value"
+        (valueChange)="valueChange($event)"
+        [name]="name"
+        [spyId]="id"
+        [type]="type"
+        [error]="'error'"
+        [placeholder]="placeholder"
+    ></spy-input>
+}

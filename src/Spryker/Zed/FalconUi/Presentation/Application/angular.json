@@ -1,0 +1,86 @@
+{
+    "$schema": "https://json.schemastore.org/angular-cli",
+    "version": 1,
+    "projects": {
+        "falcon-ui": {
+            "projectType": "application",
+            "root": "",
+            "sourceRoot": ".",
+            "prefix": "falcon",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:application",
+                    "options": {
+                        "outputPath": {
+                            "base": "../../../../../../../../../public/Backoffice/assets/falcon-ui"
+                        },
+                        "deployUrl": "/assets/falcon-ui/browser/",
+                        "index": "index.html",
+                        "browser": "main.ts",
+                        "tsConfig": "tsconfig.app.json",
+                        "inlineStyleLanguage": "less",
+                        "stylePreprocessorOptions": {
+                            "includePaths": ["../../../../../../../../../node_modules"]
+                        },
+                        "assets": [
+                            {
+                                "glob": "**/*",
+                                "input": "src/api",
+                                "output": "/api"
+                            }
+                        ],
+                        "styles": ["styles.less"],
+                        "scripts": []
+                    },
+                    "configurations": {
+                        "production": {
+                            "optimization": {
+                                "scripts": true,
+                                "styles": {
+                                    "minify": true,
+                                    "inlineCritical": true
+                                },
+                                "fonts": true
+                            },
+                            "sourceMap": false,
+                            "extractLicenses": true,
+                            "outputHashing": "none",
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "2mb",
+                                    "maximumError": "5mb"
+                                }
+                            ]
+                        },
+                        "development": {
+                            "optimization": false,
+                            "sourceMap": true,
+                            "extractLicenses": false,
+                            "outputHashing": "none"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "buildTarget": "falcon-ui:build"
+                    },
+                    "configurations": {
+                        "production": {
+                            "buildTarget": "falcon-ui:build:production"
+                        },
+                        "development": {
+                            "buildTarget": "falcon-ui:build:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                }
+            }
+        }
+    },
+    "cli": {
+        "analytics": false
+    }
+}
