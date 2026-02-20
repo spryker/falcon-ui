@@ -49,20 +49,31 @@ class FormNormalizer implements ComponentNormalizerInterface
             $normalized['slot'] = $component['slot'];
         }
 
-        $controls = $component['fields'] ?? $component['inputs']['config']['controls'] ?? [];
-        $submit = $component['submit'] ?? $component['inputs']['config']['submit'] ?? [];
+        $hasControls = isset($component['fields']) || isset($component['inputs']['config']['controls']);
+        $hasSubmit = isset($component['submit']) || isset($component['inputs']['config']['submit']);
 
-        // For edit forms, add value overrides from row data
-        if ($this->isEditForm($key)) {
-            $controls = $this->addValueOverrides($controls);
+        // Build config only with provided values (partial override support)
+        $config = [];
+
+        if ($hasControls) {
+            $controls = $component['fields'] ?? $component['inputs']['config']['controls'] ?? [];
+
+            // For edit forms, add value overrides from row data
+            if ($this->isEditForm($key)) {
+                $controls = $this->addValueOverrides($controls);
+            }
+
+            $config['controls'] = $controls;
         }
 
-        $normalized['inputs'] = [
-            'config' => [
-                'controls' => $controls,
-                'submit' => $this->normalizeSubmit($key, $submit, $entityName),
-            ],
-        ];
+        if ($hasSubmit) {
+            $submit = $component['submit'] ?? $component['inputs']['config']['submit'] ?? [];
+            $config['submit'] = $this->normalizeSubmit($key, $submit, $entityName);
+        }
+
+        if ($config !== []) {
+            $normalized['inputs'] = ['config' => $config];
+        }
 
         return $normalized;
     }
@@ -115,28 +126,69 @@ class FormNormalizer implements ComponentNormalizerInterface
     protected function normalizeSubmit(string $formKey, array $submit, string $entityName): array
     {
         $entityKey = strtolower($entityName);
+        $normalized = [];
 
-        $normalized = [
-            'label' => $submit['label'] ?? 'Submit',
-            'method' => $submit['method'] ?? $this->detectMethod($formKey),
-            'url' => $submit['url'] ?? '',
-        ];
+        // Only include values that are explicitly provided (partial override support)
+        if (isset($submit['label'])) {
+            $normalized['label'] = $submit['label'];
+        }
+
+        if (isset($submit['method'])) {
+            $normalized['method'] = $submit['method'];
+        }
+
+        if (isset($submit['url'])) {
+            $normalized['url'] = $submit['url'];
+        }
 
         if (isset($submit['variant'])) {
             $normalized['variant'] = $submit['variant'];
         }
 
-        // Delete forms should have active button by default (no validation needed)
         if (isset($submit['active'])) {
             $normalized['active'] = $submit['active'];
-        } elseif ($this->isDeleteForm($formKey)) {
-            $normalized['active'] = true;
         }
 
-        $normalized['actions'] = $submit['actions'] ?? $this->actionsBuilder->buildSuccessActions($entityKey, $submit['success'] ?? null);
-        $normalized['errorActions'] = $submit['errorActions'] ?? $this->actionsBuilder->buildErrorActions($entityKey, $submit['error'] ?? null);
+        $actions = $this->resolveActions($submit, $entityKey);
+        $errorActions = $this->resolveErrorActions($submit, $entityKey);
+
+        if ($actions !== null) {
+            $normalized['actions'] = $actions;
+        }
+
+        if ($errorActions !== null) {
+            $normalized['errorActions'] = $errorActions;
+        }
 
         return $normalized;
+    }
+
+    /**
+     * @param array<string, mixed> $submit
+     *
+     * @return array<mixed>|null
+     */
+    protected function resolveActions(array $submit, string $entityKey): ?array
+    {
+        if (isset($submit['success'])) {
+            return $this->actionsBuilder->buildSuccessActions($entityKey, $submit['success']);
+        }
+
+        return $submit['actions'] ?? null;
+    }
+
+    /**
+     * @param array<string, mixed> $submit
+     *
+     * @return array<mixed>|null
+     */
+    protected function resolveErrorActions(array $submit, string $entityKey): ?array
+    {
+        if (isset($submit['error'])) {
+            return $this->actionsBuilder->buildErrorActions($entityKey, $submit['error']);
+        }
+
+        return $submit['errorActions'] ?? null;
     }
 
     /**

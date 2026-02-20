@@ -52,7 +52,8 @@ class FalconUiAdapter implements AdapterInterface
     protected function adaptCustomConfig(array $config): array
     {
         $entityName = $config['entity'];
-        $components = $config['view']['components'] ?? [];
+
+        $components = $this->resolveUserComponents($config);
 
         $normalizedComponents = $this->normalizer->normalizeComponents($components, $entityName);
         $layout = $this->resolveLayout($config);
@@ -81,10 +82,9 @@ class FalconUiAdapter implements AdapterInterface
         $entityName = $config['entity'];
 
         $generatedComponents = $this->generateCrudComponents($config);
-        $normalizedUserComponents = $this->normalizer->normalizeComponents(
-            $config['view']['components'] ?? [],
-            $entityName,
-        );
+
+        $userComponents = $this->resolveUserComponents($config);
+        $normalizedUserComponents = $this->normalizer->normalizeComponents($userComponents, $entityName);
 
         $mergedComponents = $this->mergeComponents($generatedComponents, $normalizedUserComponents);
         $layout = $this->resolveLayout($config);
@@ -154,7 +154,7 @@ class FalconUiAdapter implements AdapterInterface
     protected function mergeComponents(array $generated, array $user): array
     {
         foreach ($user as $key => $value) {
-            $generated[$key] = $this->mergeValue($generated[$key] ?? null, $value);
+            $generated[$key] = $this->mergeValue($generated[$key] ?? null, $value, $key);
         }
 
         return $generated;
@@ -163,16 +163,95 @@ class FalconUiAdapter implements AdapterInterface
     /**
      * Merges existing value with new override.
      * Scalars, nulls, and indexed arrays are replaced. Associative arrays are merged recursively.
+     * Special handling for 'slots' - merges by slot name instead of replacing.
      */
-    protected function mergeValue(mixed $existing, mixed $new): mixed
+    protected function mergeValue(mixed $existing, mixed $new, string $key = ''): mixed
     {
+        // Special handling for slots - merge by slot name
+        if ($key === 'slots' && is_array($existing) && is_array($new)) {
+            return $this->mergeSlots($existing, $new);
+        }
+
         // Non-arrays or indexed arrays replacing
         if (!is_array($new) || !is_array($existing) || $this->isIndexedArray($existing)) {
             return $new;
         }
 
         // Associative arrays - merge recursively
-        return $this->mergeComponents($existing, $new);
+        return $this->mergeComponentsWithKeys($existing, $new);
+    }
+
+    /**
+     * Merges slots arrays by slot name.
+     * Slots without explicit 'slot' key are considered default (content) slots.
+     *
+     * @param array<array<string, mixed>> $existing
+     * @param array<array<string, mixed>> $new
+     *
+     * @return array<array<string, mixed>>
+     */
+    protected function mergeSlots(array $existing, array $new): array
+    {
+        [$bySlot, $default] = $this->categorizeSlots($existing);
+        [$bySlot, $newDefault] = $this->categorizeSlots($new, $bySlot);
+
+        return array_merge($newDefault ?: $default, array_values($bySlot));
+    }
+
+    /**
+     * @param array<array<string, mixed>> $slots
+     * @param array<string, array<string, mixed>> $bySlot
+     *
+     * @return array{array<string, array<string, mixed>>, array<array<string, mixed>>}
+     */
+    protected function categorizeSlots(array $slots, array $bySlot = []): array
+    {
+        $default = [];
+
+        foreach ($slots as $slot) {
+            $slotName = $slot['slot'] ?? null;
+
+            if ($slotName === null) {
+                $default[] = $slot;
+
+                continue;
+            }
+
+            $bySlot[$slotName] = isset($bySlot[$slotName])
+                ? $this->mergeComponentsWithKeys($bySlot[$slotName], $slot)
+                : $slot;
+        }
+
+        return [$bySlot, $default];
+    }
+
+    /**
+     * Merges components with key tracking for special handling.
+     *
+     * @param array<string, mixed> $existing
+     * @param array<string, mixed> $new
+     *
+     * @return array<string, mixed>
+     */
+    protected function mergeComponentsWithKeys(array $existing, array $new): array
+    {
+        foreach ($new as $key => $value) {
+            $existing[$key] = $this->mergeValue($existing[$key] ?? null, $value, $key);
+        }
+
+        return $existing;
+    }
+
+    /**
+     * Resolves user-defined component overrides from config.
+     *
+     * @param array<string, mixed> $config
+     *
+     * @return array<string, mixed>
+     */
+    protected function resolveUserComponents(array $config): array
+    {
+        return $config['view']['_userComponentOverrides'] ?? $config['view']['components'] ?? [];
     }
 
     /**

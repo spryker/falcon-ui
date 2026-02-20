@@ -64,14 +64,38 @@ class TableNormalizer implements ComponentNormalizerInterface
     {
         $existingConfig = $component['inputs']['config'] ?? [];
 
-        return [
-            'dataSource' => $this->normalizeDataSource($component['dataSource'] ?? $existingConfig['dataSource'] ?? []),
-            'columns' => $this->normalizeColumns($component['columns'] ?? $existingConfig['columns'] ?? []),
-            'filters' => $this->normalizeFilters($component['filters'] ?? $existingConfig['filters'] ?? []),
-            'pagination' => $this->normalizePagination($component['pagination'] ?? $existingConfig['pagination'] ?? null),
-            'search' => $this->normalizeSearch($component['search'] ?? $existingConfig['search'] ?? null),
-            'rowActions' => $this->normalizeRowActions($component['rowClick'] ?? $existingConfig['rowActions'] ?? null),
-        ];
+        // Build config from user-defined values, falling back to existing config
+        // User-defined values will override generated ones during merge
+        $config = [];
+
+        // Only add dataSource if user explicitly defines it (to preserve generated URL)
+        if (isset($component['dataSource'])) {
+            $config['dataSource'] = $this->normalizeDataSource($component['dataSource']);
+        }
+
+        // Only add columns if user explicitly defines them (to preserve generated columns)
+        if (isset($component['columns'])) {
+            $config['columns'] = $this->normalizeColumns($component['columns']);
+        }
+
+        // Add other keys if defined - these ARE meant to override
+        if (isset($component['filters'])) {
+            $config['filters'] = $this->normalizeFilters($component['filters']);
+        }
+
+        if (isset($component['pagination'])) {
+            $config['pagination'] = $this->normalizePagination($component['pagination']);
+        }
+
+        if (isset($component['search'])) {
+            $config['search'] = $this->normalizeSearch($component['search']);
+        }
+
+        if (isset($component['rowClick'])) {
+            $config['rowActions'] = $this->normalizeRowActions($component['rowClick']);
+        }
+
+        return $config;
     }
 
     /**
@@ -81,10 +105,16 @@ class TableNormalizer implements ComponentNormalizerInterface
      */
     protected function normalizeDataSource(array $dataSource): array
     {
-        return [
+        $normalized = [
             'type' => $dataSource['type'] ?? 'http',
-            'url' => $dataSource['url'] ?? '',
         ];
+
+        // Only include URL if explicitly provided, otherwise let merge preserve generated URL
+        if (isset($dataSource['url'])) {
+            $normalized['url'] = $dataSource['url'];
+        }
+
+        return $normalized;
     }
 
     /**

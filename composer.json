@@ -6,6 +6,7 @@
     "require": {
         "php": ">=8.3",
         "spryker/composable-backoffice-ui": "^0.1.0",
+        "spryker/doctrine-inflector": "^1.0.0",
         "spryker/kernel": "^3.30.0",
         "spryker/oauth": "^2.13.0",
         "spryker/session": "^4.0.0",
