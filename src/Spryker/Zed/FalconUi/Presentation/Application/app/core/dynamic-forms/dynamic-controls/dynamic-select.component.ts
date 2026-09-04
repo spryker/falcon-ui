@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SelectOption } from '@spryker/select';
 import { BaseDynamicControl, dynamicControlProvider, sharedDynamicControlDeps } from './base-dynamic-control';
 import { SelectComponent } from '../reactive-controls/select/select.component';
 
@@ -13,7 +14,7 @@ import { SelectComponent } from '../reactive-controls/select/select.component';
             <fl-select
                 [formControlName]="control.controlKey"
                 [id]="control.controlKey"
-                [options]="control.config.options"
+                [options]="selectOptions"
                 [datasource]="control.config.datasource"
                 control
             >
@@ -21,4 +22,10 @@ import { SelectComponent } from '../reactive-controls/select/select.component';
         </spy-form-item>
     `,
 })
-export class DynamicSelectComponent extends BaseDynamicControl implements OnInit {}
+export class DynamicSelectComponent extends BaseDynamicControl implements OnInit {
+    protected get selectOptions(): SelectOption[] | undefined {
+        return this.control.config.options?.map((option) =>
+            typeof option === 'string' ? option : { title: option.label, value: option.value },
+        );
+    }
+}

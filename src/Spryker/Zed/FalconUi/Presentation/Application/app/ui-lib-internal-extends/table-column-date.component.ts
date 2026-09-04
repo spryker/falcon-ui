@@ -10,7 +10,7 @@ import { TableColumnDateConfig } from '@spryker/table.column.date';
     imports: [CommonModule],
     template: `
         <ng-container *ngIf="context?.displayValue">
-            {{ context.displayValue | date: config?.format || 'shortDate' }}
+            {{ $any(context.displayValue) | date: config?.format || 'shortDate' }}
         </ng-container>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,

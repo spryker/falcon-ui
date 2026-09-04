@@ -12,7 +12,7 @@ import { InputComponent } from '../reactive-controls/input/input.component';
             {{ control.config.label }}
             <fl-input
                 [id]="control.controlKey"
-                [type]="control.config.type"
+                [type]="control.config.type ?? 'text'"
                 [formControlName]="control.controlKey"
                 control
             ></fl-input>

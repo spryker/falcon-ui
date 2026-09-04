@@ -13,7 +13,7 @@ import { RadioComponent } from '../reactive-controls/radio/radio.component';
             <fl-radio
                 [name]="control.controlKey"
                 [id]="control.controlKey"
-                [options]="control.config.options || []"
+                [options]="radioOptions"
                 [formControlName]="control.controlKey"
                 control
             >
@@ -21,4 +21,10 @@ import { RadioComponent } from '../reactive-controls/radio/radio.component';
         </spy-form-item>
     `,
 })
-export class DynamicRadioComponent extends BaseDynamicControl {}
+export class DynamicRadioComponent extends BaseDynamicControl {
+    protected get radioOptions(): string[] {
+        return (this.control.config.options ?? []).map((option) =>
+            typeof option === 'string' ? option : option.value,
+        );
+    }
+}

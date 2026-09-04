@@ -1,4 +1,4 @@
-<spy-radio-group [name]="name" [value]="value" (selected)="valueChange($event)">
+<spy-radio-group [name]="name" [value]="value" (selected)="valueChange($any($event))">
     @for (option of options; track option) {
         <spy-radio [value]="option">{{ option }}</spy-radio>
     }

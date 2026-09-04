@@ -3,7 +3,7 @@
     [value]="value"
     [multiple]="multiple"
     (valueChange)="valueChange($event)"
-    [name]="name"
+    [name]="name ?? ''"
     [placeholder]="placeholder"
     (blur)="blur()"
     [options]="options"

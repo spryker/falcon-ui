@@ -1,6 +1,6 @@
 <spy-date-picker
-    [date]="value"
-    (dateChange)="valueChange($event)"
+    [date]="value ?? ''"
+    (dateChange)="dateChange($event)"
     [name]="name"
     [placeholder]="placeholder"
     [disabled]="disabled"

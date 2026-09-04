@@ -8,7 +8,7 @@ import { ControlLayoutComponent } from './layout.model';
     standalone: true,
     imports: [CommonModule, CardModule],
     template: `
-        <spy-card [spyTitle]="options?.['title']">
+        <spy-card [spyTitle]="title">
             <ng-container *ngTemplateOutlet="content"></ng-container>
         </spy-card>
     `,
@@ -24,4 +24,10 @@ import { ControlLayoutComponent } from './layout.model';
 export class CardControlLayoutComponent implements ControlLayoutComponent {
     @Input({ required: true }) content!: TemplateRef<unknown>;
     @Input() options?: Record<string, unknown>;
+
+    protected get title(): string {
+        const title = this.options?.['title'];
+
+        return typeof title === 'string' ? title : '';
+    }
 }

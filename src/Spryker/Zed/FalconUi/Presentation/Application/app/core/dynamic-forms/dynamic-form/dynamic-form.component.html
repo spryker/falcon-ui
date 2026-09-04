@@ -14,8 +14,8 @@
         }
 
         <spy-button
-            type="submit"
-            [variant]="this.config.submit.variant"
+            [type]="ButtonType.Submit"
+            [variant]="config.submit.variant ?? ButtonVariant.Primary"
             [disabled]="((form.invalid || form.pristine) && !this.config.submit.active) || (isSubmitting$ | async)"
         >
             {{ this.config.submit.label }}

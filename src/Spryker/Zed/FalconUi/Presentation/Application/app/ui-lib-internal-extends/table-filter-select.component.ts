@@ -4,7 +4,7 @@ import {
     TableFilterSelect,
     TableFilterSelectComponent as TableFilterSelectComponentCore,
 } from '@spryker/table.filter.select';
-import { CommonModule } from 'node_modules/@angular/common';
+import { CommonModule } from '@angular/common';
 import { I18nModule } from '@spryker/locale';
 import { DatasourceConfig } from '@spryker/datasource';
 
@@ -25,7 +25,7 @@ declare module '@spryker/table.filter.select' {
             (valueChange)="valueChange.emit($event)"
             [multiple]="config?.typeOptions?.multiselect"
             [datasource]="datasource"
-            [placeholder]="'table.filter.select.filter:title' | spyI18n: { title: config?.title } | async"
+            [placeholder]="('table.filter.select.filter:title' | spyI18n: { title: config?.title ?? '' } | async) ?? ''"
         ></spy-select>
     `,
     imports: [SelectModule, CommonModule, I18nModule],

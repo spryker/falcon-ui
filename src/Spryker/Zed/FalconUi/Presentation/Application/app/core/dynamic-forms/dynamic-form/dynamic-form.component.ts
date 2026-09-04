@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, Injector, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ButtonModule, ButtonVariant } from '@spryker/button';
+import { ButtonModule, ButtonType, ButtonVariant } from '@spryker/button';
 import { DynamicControl } from '../dynamic-forms.model';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DynamicControlResolver } from '../dynamic-control-resolver.service';
@@ -64,6 +64,9 @@ export class DynamicFormComponent {
             variant?: ButtonVariant;
         };
     };
+
+    protected readonly ButtonType = ButtonType;
+    protected readonly ButtonVariant = ButtonVariant;
 
     protected form = new FormGroup({});
 

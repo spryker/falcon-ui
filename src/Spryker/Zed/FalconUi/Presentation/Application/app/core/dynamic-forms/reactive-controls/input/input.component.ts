@@ -2,13 +2,14 @@
 import { ChangeDetectionStrategy, Component, forwardRef, Input, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { InputModule } from '@spryker/input';
+import { InputPasswordModule } from '@spryker/input.password';
 import { provideValueAccessor } from '../accessor';
 
 @Component({
     selector: 'fl-input',
     templateUrl: './input.component.html',
     standalone: true,
-    imports: [InputModule],
+    imports: [InputModule, InputPasswordModule],
     providers: [provideValueAccessor(forwardRef(() => InputComponent))],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,

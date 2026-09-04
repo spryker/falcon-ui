@@ -22,10 +22,14 @@ import { from, switchMap } from 'rxjs';
 export class ControlLayoutWrapperComponent {
     private readonly layoutResolver = inject(LayoutResolverService);
 
-    $layout = input<{
-        template: string;
-        [key: string]: unknown;
-    } | null>(null, { alias: 'layout' });
+    $layout = input<
+        | {
+              template: string;
+              [key: string]: unknown;
+          }
+        | null
+        | undefined
+    >(null, { alias: 'layout' });
     $content = input<TemplateRef<unknown> | null>(null, { alias: 'content' });
 
     private $layoutName = computed(() => this.$layout()?.template);

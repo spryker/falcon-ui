@@ -41,8 +41,8 @@ export class DatePickerComponent implements ControlValueAccessor {
         this.disabled = isDisabled;
     }
 
-    protected valueChange(value: string): void {
-        this.onChange(value);
+    protected dateChange(date: Date): void {
+        this.onChange(date.toISOString());
     }
 
     protected blur(): void {

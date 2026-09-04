@@ -49,14 +49,14 @@ export class BaseDynamicControl implements OnInit, OnDestroy {
         return this.errorStateMatcher.isErrorVisible(this.formControl, this.formDirective);
     }
 
-    protected get errorText(): string | null {
+    protected get errorText(): string | boolean {
         if (this.formControl.hasError('serverError')) {
             const serverError = this.formControl.getError('serverError');
             return Array.isArray(serverError) ? serverError.join(', ') : serverError;
         }
 
         if (!this.shouldShowError || !this.formControl.errors) {
-            return null;
+            return false;
         }
 
         const [firstErrorKey, firstErrorValue] = Object.entries(this.formControl.errors)[0];
@@ -64,7 +64,7 @@ export class BaseDynamicControl implements OnInit, OnDestroy {
         if (!this.errorMessages[firstErrorKey]) {
             // eslint-disable-next-line no-console
             console.warn(`Missing message for ${firstErrorKey} validator...`);
-            return null;
+            return false;
         }
 
         return this.errorMessages[firstErrorKey](firstErrorValue);
