@@ -2,12 +2,27 @@
 <transfers xmlns="spryker:transfer-01" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="spryker:transfer-01 http://static.spryker.com/transfer-01.xsd">
 
     <transfer name="AccessTokenResponse" strict="true">
+        <property name="isSuccessful" type="bool"/>
+        <property name="accessTokenError" type="AccessTokenError"/>
+        <property name="accessToken" type="string"/>
+        <property name="expiresAt" type="string"/>
     </transfer>
 
     <transfer name="AccessTokenError" strict="true">
+        <property name="error" type="string"/>
+        <property name="errorDescription" type="string"/>
     </transfer>
 
     <transfer name="OauthRequest">
+        <property name="grantType" type="string" description="The method by which an application gets an access token (e.g., 'password', 'refresh_token')."/>
+        <property name="refreshToken" type="string"/>
+    </transfer>
+
+    <transfer name="OauthResponse">
+        <property name="isValid" type="bool" description="A boolean flag indicating if a token or request is valid."/>
+        <property name="accessToken" type="string" description="The token used for authenticating API requests."/>
+        <property name="refreshToken" type="string" description="A token used to obtain a new access token when the current one expires."/>
+        <property name="expiresIn" type="int" description="The duration in seconds for which an access token is valid."/>
     </transfer>
 
 </transfers>
