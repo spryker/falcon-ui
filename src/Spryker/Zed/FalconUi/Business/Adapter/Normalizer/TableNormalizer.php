@@ -62,8 +62,6 @@ class TableNormalizer implements ComponentNormalizerInterface
      */
     protected function buildConfig(array $component): array
     {
-        $existingConfig = $component['inputs']['config'] ?? [];
-
         // Build config from user-defined values, falling back to existing config
         // User-defined values will override generated ones during merge
         $config = [];
